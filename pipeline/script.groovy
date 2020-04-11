@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('autograding') {
             steps {
-                publishCoverage adapters: [jacocoAdapter('/pipeline/jacoco.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
+                publishCoverage adapters: [jacocoAdapter('pipeline/jacoco.xml')], sourceFileResolver: sourceFiles('NEVER_STORE')
             }
         }
     }
