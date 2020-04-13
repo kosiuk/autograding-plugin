@@ -60,12 +60,11 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
                 "{ \"coverage\":{\"maxScore\":100,\"coveredImpact\":1,\"missedImpact\":-1}}");
         Run<?, ?> baseline = buildSuccessfully(job);
 
-        assertThat(getConsoleLog(baseline)).contains(
-                "[Autograding] -> Score 42 - from recorded line coverage results: 71%");
-        assertThat(getConsoleLog(baseline)).contains(
-                "[Autograding] -> Score 8 - from recorded branch coverage results: 54%");
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] -> Score 42 - from recorded coverage results: 71%");
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] Total score for coverage results: 50");
+        List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
+        assertThat(actions).hasSize(1);
+        Score score = actions.get(0).getResult();
+
+        assertThat(score).hasAchieved(50);
     }
 
     @Test
@@ -76,10 +75,11 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
                 "{\"pit\":{\"maxScore\":100,\"detectedImpact\":1,\"undetectedImpact\":-1,\"ratioImpact\":0}}");
         Run<?, ?> baseline = buildSuccessfully(job);
 
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] Grading PIT mutation results PIT Mutation Report");
-        assertThat(getConsoleLog(baseline)).contains(
-                "[Autograding] -> Score 56 - from recorded PIT mutation results: 190, 67, 123, 36");
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] Total score for mutation coverage results: 56");
+        List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
+        assertThat(actions).hasSize(1);
+        Score score = actions.get(0).getResult();
+
+        assertThat(score).hasAchieved(56);
     }
 
     @Test
@@ -99,10 +99,11 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
                 "{\"tests\":{\"maxScore\":100,\"passedImpact\":1,\"failureImpact\":-5,\"skippedImpact\":-1}}");
         Run<?, ?> baseline = buildSuccessfully(job);
 
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] Grading test results Test Result");
-        assertThat(getConsoleLog(baseline)).contains(
-                "[Autograding] -> Score 53 - from recorded test results: 53, 53, 0, 0");
-        assertThat(getConsoleLog(baseline)).contains("[Autograding] Total score for test results: 53");
+        List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
+        assertThat(actions).hasSize(1);
+        Score score = actions.get(0).getResult();
+
+        assertThat(score).hasAchieved(53);
     }
 
     /**
@@ -154,7 +155,7 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
                         + "         recordIssues tool: checkStyle(pattern: '**/" + fileName + "*')\n";
                 break;
             case "jacoco":
-                script += "  stage ('Integration Test Coverage') {\n"
+                script += "  stage ('Integration Test Line and Branch Coverage') {\n"
                         + "         publishCoverage adapters: [jacocoAdapter('**/" + fileName
                         + "*')], sourceFileResolver: sourceFiles('NEVER_STORE')\n";
                 break;
@@ -163,7 +164,7 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
                         + "         step([$class: 'PitPublisher', mutationStatsFile: '**/" + fileName + "*'])\n";
                 break;
             default:
-                script += "  stage ('Build and Static Analysis') {\n"
+                script += "  stage ('Integration Test JUnit Coverage') {\n"
                         + "         junit testResults: '**/TEST-" + fileName + ".xml'\n";
                 break;
         }
