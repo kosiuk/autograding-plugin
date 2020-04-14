@@ -61,7 +61,7 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
 
         List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
         assertThat(actions).hasSize(1);
-        Score score = actions.get(0).getResult();
+        AggregatedScore score = actions.get(0).getResult();
 
         assertThat(score).hasAchieved(50);
     }
@@ -76,7 +76,7 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
 
         List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
         assertThat(actions).hasSize(1);
-        Score score = actions.get(0).getResult();
+        AggregatedScore score = actions.get(0).getResult();
 
         assertThat(score).hasAchieved(56);
     }
@@ -100,7 +100,7 @@ public class AutoGraderITest extends IntegrationTestWithJenkinsPerSuite {
 
         List<AutoGradingBuildAction> actions = baseline.getActions(AutoGradingBuildAction.class);
         assertThat(actions).hasSize(1);
-        Score score = actions.get(0).getResult();
+        AggregatedScore score = actions.get(0).getResult();
 
         assertThat(score).hasAchieved(53);
     }
